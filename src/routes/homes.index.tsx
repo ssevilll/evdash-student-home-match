@@ -7,8 +7,8 @@ import { PropertyCard } from "@/components/site/PropertyCard";
 type S = { uni?: string; max?: number };
 export const Route = createFileRoute("/homes/")({
   validateSearch: (s: Record<string, unknown>): S => ({
-    ...(typeof s.uni === "string" && s.uni ? { uni: s.uni } : {}),
-    ...(s.max && !isNaN(Number(s.max)) ? { max: Number(s.max) } : {}),
+    ...(typeof s["uni"] === "string" && s["uni"] ? { uni: s["uni"] } : {}),
+    ...(s["max"] && !isNaN(Number(s["max"])) ? { max: Number(s["max"]) } : {}),
   }),
   head: () => ({
     meta: [

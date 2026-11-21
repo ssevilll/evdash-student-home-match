@@ -10,11 +10,30 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RoommatesRouteImport } from './routes/roommates'
+import { Route as SubscriptionsRouteImport } from './routes/subscriptions'
+import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as HomesIndexRouteImport } from './routes/homes.index'
+import { Route as HomesIdRouteImport } from './routes/homes.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RoommatesRoute = RoommatesRouteImport.update({
+  id: '/roommates',
+  path: '/roommates',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SubscriptionsRoute = SubscriptionsRouteImport.update({
+  id: '/subscriptions',
+  path: '/subscriptions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WishlistRoute = WishlistRouteImport.update({
+  id: '/wishlist',
+  path: '/wishlist',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HomesIndexRoute = HomesIndexRouteImport.update({
@@ -22,30 +41,70 @@ const HomesIndexRoute = HomesIndexRouteImport.update({
   path: '/homes/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HomesIdRoute = HomesIdRouteImport.update({
+  id: '/homes/$id',
+  path: '/homes/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/roommates': typeof RoommatesRoute
+  '/subscriptions': typeof SubscriptionsRoute
+  '/wishlist': typeof WishlistRoute
+  '/homes/$id': typeof HomesIdRoute
   '/homes/': typeof HomesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/roommates': typeof RoommatesRoute
+  '/subscriptions': typeof SubscriptionsRoute
+  '/wishlist': typeof WishlistRoute
+  '/homes/$id': typeof HomesIdRoute
   '/homes': typeof HomesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/roommates': typeof RoommatesRoute
+  '/subscriptions': typeof SubscriptionsRoute
+  '/wishlist': typeof WishlistRoute
+  '/homes/$id': typeof HomesIdRoute
   '/homes/': typeof HomesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/homes/'
+  fullPaths:
+    | '/'
+    | '/roommates'
+    | '/subscriptions'
+    | '/wishlist'
+    | '/homes/$id'
+    | '/homes/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/homes'
-  id: '__root__' | '/' | '/homes/'
+  to:
+    | '/'
+    | '/roommates'
+    | '/subscriptions'
+    | '/wishlist'
+    | '/homes/$id'
+    | '/homes'
+  id:
+    | '__root__'
+    | '/'
+    | '/roommates'
+    | '/subscriptions'
+    | '/wishlist'
+    | '/homes/$id'
+    | '/homes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  RoommatesRoute: typeof RoommatesRoute
+  SubscriptionsRoute: typeof SubscriptionsRoute
+  WishlistRoute: typeof WishlistRoute
+  HomesIdRoute: typeof HomesIdRoute
   HomesIndexRoute: typeof HomesIndexRoute
 }
 
@@ -58,6 +117,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/roommates': {
+      id: '/roommates'
+      path: '/roommates'
+      fullPath: '/roommates'
+      preLoaderRoute: typeof RoommatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/subscriptions': {
+      id: '/subscriptions'
+      path: '/subscriptions'
+      fullPath: '/subscriptions'
+      preLoaderRoute: typeof SubscriptionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wishlist': {
+      id: '/wishlist'
+      path: '/wishlist'
+      fullPath: '/wishlist'
+      preLoaderRoute: typeof WishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/homes/': {
       id: '/homes/'
       path: '/homes'
@@ -65,11 +145,22 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/homes/$id': {
+      id: '/homes/$id'
+      path: '/homes/$id'
+      fullPath: '/homes/$id'
+      preLoaderRoute: typeof HomesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  RoommatesRoute: RoommatesRoute,
+  SubscriptionsRoute: SubscriptionsRoute,
+  WishlistRoute: WishlistRoute,
+  HomesIdRoute: HomesIdRoute,
   HomesIndexRoute: HomesIndexRoute,
 }
 export const routeTree = rootRouteImport
