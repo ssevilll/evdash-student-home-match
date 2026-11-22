@@ -1,0 +1,7 @@
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import { pageMeta } from '@/lib/meta';
+export const Route = createFileRoute('/reset-password')({ head: () => pageMeta('Yeni şifrə', 'EvDash hesabın üçün yeni şifrə təyin et.'), component: Reset });
+function Reset() { const [valid, setValid] = useState(false); const [message, setMessage] = useState(''); const [busy, setBusy] = useState(false); useEffect(() => { const hash = new URLSearchParams(window.location.hash.slice(1)); setValid(hash.get('type') === 'recovery'); }, []); return <div className="mx-auto max-w-md px-5 py-16"><h1 className="mb-8 text-3xl font-bold">Yeni şifrə</h1>{valid ? <form className="space-y-4" onSubmit={async e => { e.preventDefault(); setBusy(true); const password = String(new FormData(e.currentTarget).get('password')); const { error } = await supabase.auth.updateUser({ password }); setMessage(error?.message ?? 'Şifrə yeniləndi.'); setBusy(false); }}><label>Yeni şifrə<input name="password" required type="password" minLength={8} className="mt-2 h-12 w-full rounded-lg border bg-card px-4" /></label><Button disabled={busy} className="h-12 w-full">Şifrəni yenilə</Button><p role="status">{message}</p></form> : <p className="text-muted-foreground">Etibarlı bərpa linki ilə bu səhifəni aç.</p>}<Link to="/auth" className="mt-6 block text-primary">Girişə qayıt</Link></div>; }
