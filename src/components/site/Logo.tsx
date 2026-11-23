@@ -9,8 +9,8 @@ export function Logo({ className = "" }: { className?: string }) {
       className={`inline-flex shrink-0 items-center ${className}`}
     >
       <img
-        src="/evdash-logo-compact.png"
-        alt="EvDash — Student Housing. Made Easy."
+        src="/favicon.png"
+        alt="EvDash Logo"
         className="h-12 w-44 object-contain"
       />
     </Link>
