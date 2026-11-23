@@ -38,10 +38,11 @@ export const Route = createFileRoute("/homes/$id")({
 function Details() {
   const h = Route.useLoaderData();
   const { has, toggle } = useWishlist();
+
   const [img, setImg] = useState(0);
   const [rules, setRules] = useState(false);
   const [ack, setAck] = useState(false);
-  
+
   const saved = has(h.id);
   const tenant = h.tenants?.[0];
 
