@@ -8,7 +8,7 @@ export function Logo({ className = "" }: { className?: string }) {
       className={`inline-flex items-center ${className}`}
     >
       <span className="text-2xl font-bold text-orange-600">
-        EVDASH TEST
+        EVDASH test
       </span>
     </Link>
   );
