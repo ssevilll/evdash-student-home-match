@@ -19,7 +19,17 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAccount } from "./AccountProvider";
 
+
 const demoNotifications = [
+  {
+    id: "demo-5",
+    title: "Ödəniş vaxtı yaxınlaşır!",
+    description:
+      "Növbəti kirayə ödənişinin son tarixini unutma! Ətraflı məlumat e-poçt ünvanına göndərilib.",
+    detail:
+      "Kirayə ödənişinin son tarixi yaxınlaşır. Gecikmənin qarşısını almaq üçün ödənişini vaxtında tamamla. Ödəniş məbləği, son tarix və ödəniş təlimatları qeydiyyatdan keçdiyin e-poçt ünvanına göndərilib. Zəhmət olmasa, e-poçtunu yoxla.",
+    time: "5 saat əvvəl",
+  },
   {
     id: "demo-1",
     title: "Yeni ev elanı!",
@@ -57,6 +67,7 @@ const demoNotifications = [
     time: "2 gün əvvəl",
   },
 ];
+
 
 type SelectedNotification = {
   id: string;
