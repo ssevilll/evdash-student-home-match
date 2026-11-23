@@ -28,3 +28,10 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Application architecture
+- Keep private account pages under the client-only `_authenticated` layout and fetch initial data through protected server functions, because sessions live in the browser.
+- Keep billing and rental rows service-write-only and enforce premium preference writes with RLS, because client controls cannot authorize entitlements.
+- Store conversations and messages with participant-scoped RLS and subscribe once per mounted chat, because both parties need private durable communication.
+- Resolve listing owners through `listing_contacts`; unassigned sample listings must disclose that messages are not delivered, because fabricated owners cannot receive them.
+- Keep pricing and promo-format helpers in a shared tested module, because registration and billing screens must agree.

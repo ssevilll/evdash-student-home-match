@@ -5,5 +5,5 @@
 - [ ] Ev sahibi mesajlaşması və bildirişlər
 - [ ] Ödənişdə gözləyən məbləğ və tarixçə
 - [ ] Yoxlama və saxlanma
-- [ ] Ödəniş qəbulu — xidmət seçimi və təsdiqi gözlənilir
-- [ ] Promo kodun aktivləşdirilməsi — kodun yazılışı gözlənilir
+- [x] Ödəniş qəbulu qoşulmur — istifadəçi yalnız panel istəyir
+- [x] Promo kod: 8 simvol, son iki simvol rəqəm
