@@ -1,5 +1,14 @@
+
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { BadgeCheck, Check, ChevronLeft, Heart, MapPin, MessageCircle, Star } from "lucide-react";
+import {
+  BadgeCheck,
+  Check,
+  ChevronLeft,
+  Heart,
+  MapPin,
+  MessageCircle,
+  Star,
+} from "lucide-react";
 import { useState } from "react";
 import { getHome, reviews, uniName, universities } from "@/lib/data";
 import { useWishlist } from "@/lib/store";
@@ -13,25 +22,49 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-
 export const Route = createFileRoute("/homes/$id")({
-  loader: ({ params }) => { const h = getHome(params.id); if (!h) throw notFound(); return h; },
+  loader: ({ params }) => {
+    const h = getHome(params.id);
+    if (!h) throw notFound();
+    return h;
+  },
+
   head: ({ loaderData }) => ({
-    meta: loaderData ? [
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-      { title: `${loaderData.title} — EvDash` },
-      { name: "description", content: `${loaderData.price} ₼/ay · ${loaderData.district}. ${loaderData.description.slice(0, 120)}` },
-      { property: "og:title", content: `${loaderData.title} — EvDash` },
-      { property: "og:description", content: `${loaderData.price} ₼/ay · ${loaderData.district}` },
-      { property: "og:image", content: loaderData.images[0] ?? "" },
-      { name: "twitter:image", content: loaderData.images[0] ?? "" },
-    ] : [{ title: "Elan tapılmadı — EvDash" }, { name: "robots", content: "noindex" }],
+    meta: loaderData
+      ? [
+          { property: "og:type", content: "website" },
+          { name: "twitter:card", content: "summary_large_image" },
+          { title: `${loaderData.title} — EvDash` },
+          {
+            name: "description",
+            content: `${loaderData.price} ₼/ay · ${loaderData.district}. ${loaderData.description.slice(0, 120)}`,
+          },
+          { property: "og:title", content: `${loaderData.title} — EvDash` },
+          {
+            property: "og:description",
+            content: `${loaderData.price} ₼/ay · ${loaderData.district}`,
+          },
+          { property: "og:image", content: loaderData.images[0] ?? "" },
+          { name: "twitter:image", content: loaderData.images[0] ?? "" },
+        ]
+      : [
+          { title: "Elan tapılmadı — EvDash" },
+          { name: "robots", content: "noindex" },
+        ],
   }),
+
   notFoundComponent: () => (
-    <div className="container-page py-24 text-center"><h1 className="text-3xl font-extrabold">Elan tapılmadı</h1>
-      <Link to="/homes" className="mt-6 inline-block rounded-full bg-brand px-6 py-3 font-semibold text-primary-foreground">Evlərə qayıt</Link></div>
+    <div className="container-page py-24 text-center">
+      <h1 className="text-3xl font-extrabold">Elan tapılmadı</h1>
+      <Link
+        to="/homes"
+        className="mt-6 inline-block rounded-full bg-brand px-6 py-3 font-semibold text-primary-foreground"
+      >
+        Evlərə qayıt
+      </Link>
+    </div>
   ),
+
   component: Details,
 });
 
@@ -46,189 +79,363 @@ function Details() {
   const saved = has(h.id);
   const tenant = h.tenants?.[0];
 
-
   return (
     <div className="container-page py-8">
-      <Link to="/homes" className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-primary"><ChevronLeft className="size-4" />Bütün evlər</Link>
-      <h1 className="mt-4 text-2xl font-extrabold sm:text-4xl">{h.title}</h1>
+      {/* Back navigation */}
+      <Link
+        to="/homes"
+        className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-primary"
+      >
+        <ChevronLeft className="size-4" />
+        Bütün evlər
+      </Link>
+
+      {/* Property heading */}
+      <h1 className="mt-4 text-2xl font-extrabold sm:text-4xl">
+        {h.title}
+      </h1>
+
       <p className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-        <span className="flex items-center gap-1"><Star className="size-4 fill-primary stroke-primary" /><b className="text-foreground">{h.rating}</b> ({h.reviews} rəy)</span>
-        <span className="flex items-center gap-1"><MapPin className="size-4" />{h.district}, {h.address}</span>
+        <span className="flex items-center gap-1">
+          <Star className="size-4 fill-primary stroke-primary" />
+          <b className="text-foreground">{h.rating}</b>
+          ({h.reviews} rəy)
+        </span>
+
+        <span className="flex items-center gap-1">
+          <MapPin className="size-4" />
+          {h.district}, {h.address}
+        </span>
       </p>
 
+      {/* Property gallery */}
       <div className="mt-6 grid gap-3 md:h-[520px] md:grid-cols-[2fr_1fr]">
-        <img src={h.images[img]} alt={h.title} className="aspect-[16/10] w-full rounded-3xl object-cover md:aspect-auto md:h-full" />
+        <img
+          src={h.images[img]}
+          alt={h.title}
+          className="aspect-[16/10] w-full rounded-3xl object-cover md:aspect-auto md:h-full"
+        />
+
         <div className="grid grid-cols-4 gap-3 md:min-h-0 md:grid-cols-1 md:grid-rows-3">
           {h.images.slice(0, 4).map((src, k) => (
-            <button key={k} onClick={() => setImg(k)} className={`overflow-hidden rounded-2xl ring-offset-2 md:min-h-0 transition ${k === 3 ? "md:hidden" : ""} ${img === k ? "ring-2 ring-primary" : "opacity-80 hover:opacity-100"}`} aria-label={`Şəkil ${k + 1}`}>
-              <img src={src} alt="" className="aspect-square size-full object-cover md:aspect-auto md:h-full" />
+            <button
+              key={k}
+              onClick={() => setImg(k)}
+              className={`overflow-hidden rounded-2xl ring-offset-2 md:min-h-0 transition ${
+                k === 3 ? "md:hidden" : ""
+              } ${
+                img === k
+                  ? "ring-2 ring-primary"
+                  : "opacity-80 hover:opacity-100"
+              }`}
+              aria-label={`Şəkil ${k + 1}`}
+            >
+              <img
+                src={src}
+                alt=""
+                className="aspect-square size-full object-cover md:aspect-auto md:h-full"
+              />
             </button>
           ))}
         </div>
       </div>
 
+      {/* Property content and booking sidebar */}
       <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_380px]">
         <div className="space-y-10">
+          {/* Property statistics */}
           <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {[["Otaq", h.rooms], ["Sahə", `${h.area} m²`], ["Mərtəbə", h.floor], ["Boş yer", h.spots]].map(([k, v]) => (
-              <div key={k} className="rounded-2xl border border-border bg-card p-4"><p className="text-xs text-muted-foreground">{k}</p><p className="mt-1 font-bold">{v}</p></div>
+            {[
+              ["Otaq", h.rooms],
+              ["Sahə", `${h.area} m²`],
+              ["Mərtəbə", h.floor],
+              ["Boş yer", h.spots],
+            ].map(([k, v]) => (
+              <div
+                key={k}
+                className="rounded-2xl border border-border bg-card p-4"
+              >
+                <p className="text-xs text-muted-foreground">{k}</p>
+                <p className="mt-1 font-bold">{v}</p>
+              </div>
             ))}
           </section>
-          <section><h2 className="text-xl font-bold">Təsvir</h2><p className="mt-3 leading-relaxed text-muted-foreground">{h.description}</p></section>
-          <section><h2 className="text-xl font-bold">Şərait</h2>
-            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">{h.amenities.map((a) => <span key={a} className="flex items-center gap-2 text-sm"><span className="grid size-6 place-items-center rounded-full bg-primary-soft"><Check className="size-3.5 text-primary" /></span>{a}</span>)}</div>
-          </section>
-          <section><h2 className="text-xl font-bold">Yaxın universitetlər</h2>
-            <div className="mt-4 space-y-2">{h.unis.map((u) => (
-              <div key={u.id} className="flex items-center justify-between rounded-2xl border border-border bg-card p-4">
-                <span className="font-medium">{universities.find((x) => x.id === u.id)?.name}</span><span className="rounded-full bg-primary-soft px-3 py-1 text-sm font-semibold text-accent-foreground">{u.minutes} dəq</span>
-              </div>))}</div>
-          </section>
-          {tenant && (
+
+          {/* Description */}
           <section>
-            <h2 className="text-xl font-bold">
-              Mövcud kirayəçi və uyğunluq
-            </h2>
-        
-            <div className="mt-4 rounded-3xl border border-border bg-card p-6">
-              <div className="flex items-center gap-4">
-                <div className="grid size-14 place-items-center rounded-2xl bg-primary-soft font-display text-lg font-bold text-accent-foreground">
-                  {tenant.name[0]}
-                </div>
-        
-                <div className="flex-1">
-                  <p className="font-semibold">{tenant.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {uniName(tenant.uni)} · {tenant.course}
-                  </p>
-                </div>
-        
-                {h.compat != null && (
-                  <CompatRing value={h.compat} size={64} />
-                )}
-              </div>
-        
-              <p className="mt-5 text-sm font-semibold">
-                Yaşayış qaydaları
-              </p>
-        
-              <div className="mt-2 flex flex-wrap gap-2">
-                {tenant.prefs.map((p) => (
-                  <span
-                    key={p}
-                    className="rounded-full border border-border px-3 py-1.5 text-sm"
-                  >
-                    {p}
+            <h2 className="text-xl font-bold">Təsvir</h2>
+            <p className="mt-3 leading-relaxed text-muted-foreground">
+              {h.description}
+            </p>
+          </section>
+
+          {/* Amenities */}
+          <section>
+            <h2 className="text-xl font-bold">Şərait</h2>
+
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {h.amenities.map((a) => (
+                <span key={a} className="flex items-center gap-2 text-sm">
+                  <span className="grid size-6 place-items-center rounded-full bg-primary-soft">
+                    <Check className="size-3.5 text-primary" />
                   </span>
-                ))}
-              </div>
+                  {a}
+                </span>
+              ))}
             </div>
           </section>
-        )}  
-          <section><h2 className="text-xl font-bold">Rəylər</h2>
-            <div className="mt-4 grid gap-4 sm:grid-cols-3">{reviews.map((r) => (
-              <div key={r.name} className="rounded-2xl border border-border bg-card p-5">
-                <div className="flex gap-0.5">{Array.from({ length: 5 }).map((_, k) => <Star key={k} className={`size-3.5 ${k < r.rating ? "fill-primary stroke-primary" : "stroke-muted-foreground"}`} />)}</div>
-                <p className="mt-3 text-sm">{r.text}</p><p className="mt-3 text-xs font-semibold text-muted-foreground">{r.name} · {r.uni}</p>
-              </div>))}</div>
+
+          {/* Nearby universities */}
+          <section>
+            <h2 className="text-xl font-bold">Yaxın universitetlər</h2>
+
+            <div className="mt-4 space-y-2">
+              {h.unis.map((u) => (
+                <div
+                  key={u.id}
+                  className="flex items-center justify-between rounded-2xl border border-border bg-card p-4"
+                >
+                  <span className="font-medium">
+                    {universities.find((x) => x.id === u.id)?.name}
+                  </span>
+
+                  <span className="rounded-full bg-primary-soft px-3 py-1 text-sm font-semibold text-accent-foreground">
+                    {u.minutes} dəq
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Existing roommate and preferences */}
+          {tenant && (
+            <section>
+              <h2 className="text-xl font-bold">
+                Mövcud kirayəçi və uyğunluq
+              </h2>
+
+              <div className="mt-4 rounded-3xl border border-border bg-card p-6">
+                <div className="flex items-center gap-4">
+                  <div className="grid size-14 place-items-center rounded-2xl bg-primary-soft font-display text-lg font-bold text-accent-foreground">
+                    {tenant.name[0]}
+                  </div>
+
+                  <div className="flex-1">
+                    <p className="font-semibold">{tenant.name}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {uniName(tenant.uni)} · {tenant.course}
+                    </p>
+                  </div>
+
+                  {h.compat != null && (
+                    <CompatRing value={h.compat} size={64} />
+                  )}
+                </div>
+
+                <p className="mt-5 text-sm font-semibold">
+                  Yaşayış qaydaları
+                </p>
+
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {tenant.prefs.map((p) => (
+                    <span
+                      key={p}
+                      className="rounded-full border border-border px-3 py-1.5 text-sm"
+                    >
+                      {p}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Reviews */}
+          <section>
+            <h2 className="text-xl font-bold">Rəylər</h2>
+
+            <div className="mt-4 grid gap-4 sm:grid-cols-3">
+              {reviews.map((r) => (
+                <div
+                  key={r.name}
+                  className="rounded-2xl border border-border bg-card p-5"
+                >
+                  <div className="flex gap-0.5">
+                    {Array.from({ length: 5 }).map((_, k) => (
+                      <Star
+                        key={k}
+                        className={`size-3.5 ${
+                          k < r.rating
+                            ? "fill-primary stroke-primary"
+                            : "stroke-muted-foreground"
+                        }`}
+                      />
+                    ))}
+                  </div>
+
+                  <p className="mt-3 text-sm">{r.text}</p>
+                  <p className="mt-3 text-xs font-semibold text-muted-foreground">
+                    {r.name} · {r.uni}
+                  </p>
+                </div>
+              ))}
+            </div>
           </section>
         </div>
 
+        {/* Booking sidebar */}
         <aside className="lg:sticky lg:top-24 lg:self-start">
           <div className="rounded-3xl border border-border bg-card p-6 shadow-lift">
-            <p><span className="font-display text-3xl font-extrabold">{h.price} ₼</span><span className="text-muted-foreground"> / ay</span></p>
+            <p>
+              <span className="font-display text-3xl font-extrabold">
+                {h.price} ₼
+              </span>
+              <span className="text-muted-foreground"> / ay</span>
+            </p>
+
             <div className="mt-4 space-y-2 border-y border-border py-4 text-sm">
-              <div className="flex justify-between"><span className="text-muted-foreground">Depozit</span><b>{h.deposit} ₼</b></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Mövcuddur</span><b>{h.available}</b></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Boş yer</span><b>{h.spots}</b></div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Depozit</span>
+                <b>{h.deposit} ₼</b>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Mövcuddur</span>
+                <b>{h.available}</b>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Boş yer</span>
+                <b>{h.spots}</b>
+              </div>
             </div>
+
+            {/* Consultation button */}
             {tenant ? (
-            <Button
-              className="mt-5 h-12 w-full bg-brand"
-              onClick={() => {
-                setAck(false);
-                setRules(true);
-              }}
-            >
-              <MessageCircle />
-              Ev sahibi ilə görüş
-            </Button>
-          ) : (
-            <Button asChild className="mt-5 h-12 w-full bg-brand">
-              <Link to="/messages" search={{ home: h.id }}>
+              <Button
+                className="mt-5 h-12 w-full bg-brand"
+                onClick={() => {
+                  setAck(false);
+                  setRules(true);
+                }}
+              >
                 <MessageCircle />
                 Ev sahibi ilə görüş
-              </Link>
-            </Button>
-          )}
-            <button onClick={() => toggle(h.id)} aria-pressed={saved} className={`mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-xl border font-semibold transition ${saved ? "border-primary bg-primary-soft text-accent-foreground" : "border-border hover:border-primary"}`}>
-              <Heart className={`size-4 ${saved ? "fill-primary stroke-primary" : ""}`} />{saved ? "İstək siyahısındadır" : "İstək siyahısına əlavə et"}
+              </Button>
+            ) : (
+              <Button asChild className="mt-5 h-12 w-full bg-brand">
+                <Link to="/messages" search={{ home: h.id }}>
+                  <MessageCircle />
+                  Ev sahibi ilə görüş
+                </Link>
+              </Button>
+            )}
+
+            {/* Wishlist */}
+            <button
+              onClick={() => toggle(h.id)}
+              aria-pressed={saved}
+              className={`mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-xl border font-semibold transition ${
+                saved
+                  ? "border-primary bg-primary-soft text-accent-foreground"
+                  : "border-border hover:border-primary"
+              }`}
+            >
+              <Heart
+                className={`size-4 ${
+                  saved ? "fill-primary stroke-primary" : ""
+                }`}
+              />
+              {saved
+                ? "İstək siyahısındadır"
+                : "İstək siyahısına əlavə et"}
             </button>
+
+            {/* Landlord information */}
             <div className="mt-6 flex items-center gap-3 rounded-2xl bg-muted p-4">
-              <div className="grid size-11 place-items-center rounded-full bg-secondary font-bold text-secondary-foreground">{h.landlord.name[0]}</div>
-              <div className="text-sm"><p className="flex items-center gap-1 font-semibold">{h.landlord.name}<BadgeCheck className="size-4 text-primary" /></p><p className="text-xs text-muted-foreground">{h.landlord.since}-dən EvDash-da · Cavab: {h.landlord.response}</p></div>
+              <div className="grid size-11 place-items-center rounded-full bg-secondary font-bold text-secondary-foreground">
+                {h.landlord.name[0]}
+              </div>
+
+              <div className="text-sm">
+                <p className="flex items-center gap-1 font-semibold">
+                  {h.landlord.name}
+                  <BadgeCheck className="size-4 text-primary" />
+                </p>
+
+                <p className="text-xs text-muted-foreground">
+                  {h.landlord.since}-dən EvDash-da · Cavab:{" "}
+                  {h.landlord.response}
+                </p>
+              </div>
             </div>
           </div>
         </aside>
       </div>
 
+      {/* Roommate rules acceptance popup */}
+      {tenant && (
+        <Dialog
+          open={rules}
+          onOpenChange={(open) => {
+            setRules(open);
+            if (!open) setAck(false);
+          }}
+        >
+          <DialogContent className="max-w-lg rounded-3xl p-7">
+            <DialogHeader>
+              <DialogTitle className="text-xl">
+                Uyğunluq tələbləri
+              </DialogTitle>
 
+              <DialogDescription>
+                {tenant.name} bu mənzildə yaşayır.
+                Davam etməzdən əvvəl otaq yoldaşının
+                yaşayış qaydaları ilə tanış ol.
+              </DialogDescription>
+            </DialogHeader>
+
+            <ul className="space-y-2">
+              {tenant.prefs.map((p) => (
+                <li
+                  key={p}
+                  className="flex items-center gap-3 rounded-xl bg-muted px-4 py-3 text-sm"
+                >
+                  <Check className="size-4 shrink-0 text-primary" />
+                  {p}
+                </li>
+              ))}
+            </ul>
+
+            <label className="flex items-start gap-3 text-sm">
+              <input
+                type="checkbox"
+                checked={ack}
+                onChange={(e) => setAck(e.target.checked)}
+                className="mt-0.5 size-4 accent-primary"
+              />
+              Bu qaydalarla tanış oldum və onlara əməl etməyə razıyam.
+            </label>
+
+            {/* Continue only after accepting */}
+            {ack ? (
+              <Button asChild className="h-12 w-full bg-brand">
+                <Link
+                  to="/messages"
+                  search={{ home: h.id }}
+                  onClick={() => setRules(false)}
+                >
+                  Davam et
+                </Link>
+              </Button>
+            ) : (
+              <Button disabled className="h-12 w-full bg-brand">
+                Davam et
+              </Button>
+            )}
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
-
-{tenant && (
-  <Dialog open={rules} onOpenChange={setRules}>
-    <DialogContent className="max-w-lg rounded-3xl p-7">
-      <DialogHeader>
-        <DialogTitle className="text-xl">
-          Uyğunluq tələbləri
-        </DialogTitle>
-        <DialogDescription>
-          {tenant.name} bu mənzildə yaşayır.
-          Davam etməzdən əvvəl otaq yoldaşının
-          yaşayış qaydaları ilə tanış ol.
-        </DialogDescription>
-      </DialogHeader>
-
-      <ul className="space-y-2">
-        {tenant.prefs.map((p) => (
-          <li
-            key={p}
-            className="flex items-center gap-3 rounded-xl bg-muted px-4 py-3 text-sm"
-          >
-            <Check className="size-4 shrink-0 text-primary" />
-            {p}
-          </li>
-        ))}
-      </ul>
-
-      <label className="flex items-start gap-3 text-sm">
-        <input
-          type="checkbox"
-          checked={ack}
-          onChange={(e) => setAck(e.target.checked)}
-          className="mt-0.5 size-4 accent-primary"
-        />
-        Bu qaydalarla tanış oldum və onlara əməl etməyə razıyam.
-      </label>
-
-      <Button
-        asChild
-        disabled={!ack}
-        className="h-12 w-full bg-brand"
-      >
-        <Link
-          to="/messages"
-          search={{ home: h.id }}
-          onClick={(e) => {
-            if (!ack) e.preventDefault();
-            else setRules(false);
-          }}
-        >
-          Davam et
-        </Link>
-      </Button>
-    </DialogContent>
-  </Dialog>
-)}
