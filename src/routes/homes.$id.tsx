@@ -4,6 +4,14 @@ import { useState } from "react";
 import { getHome, reviews, uniName, universities } from "@/lib/data";
 import { useWishlist } from "@/lib/store";
 import { Button } from "@/components/ui/button";
+import { CompatRing } from "@/components/site/RoommateCard";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 
 export const Route = createFileRoute("/homes/$id")({
@@ -31,7 +39,11 @@ function Details() {
   const h = Route.useLoaderData();
   const { has, toggle } = useWishlist();
   const [img, setImg] = useState(0);
+  const [rules, setRules] = useState(false);
+  const [ack, setAck] = useState(false);
+  
   const saved = has(h.id);
+  const tenant = h.tenants?.[0];
 
 
   return (
@@ -71,6 +83,47 @@ function Details() {
                 <span className="font-medium">{universities.find((x) => x.id === u.id)?.name}</span><span className="rounded-full bg-primary-soft px-3 py-1 text-sm font-semibold text-accent-foreground">{u.minutes} dəq</span>
               </div>))}</div>
           </section>
+          {tenant && (
+          <section>
+            <h2 className="text-xl font-bold">
+              Mövcud kirayəçi və uyğunluq
+            </h2>
+        
+            <div className="mt-4 rounded-3xl border border-border bg-card p-6">
+              <div className="flex items-center gap-4">
+                <div className="grid size-14 place-items-center rounded-2xl bg-primary-soft font-display text-lg font-bold text-accent-foreground">
+                  {tenant.name[0]}
+                </div>
+        
+                <div className="flex-1">
+                  <p className="font-semibold">{tenant.name}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {uniName(tenant.uni)} · {tenant.course}
+                  </p>
+                </div>
+        
+                {h.compat != null && (
+                  <CompatRing value={h.compat} size={64} />
+                )}
+              </div>
+        
+              <p className="mt-5 text-sm font-semibold">
+                Yaşayış qaydaları
+              </p>
+        
+              <div className="mt-2 flex flex-wrap gap-2">
+                {tenant.prefs.map((p) => (
+                  <span
+                    key={p}
+                    className="rounded-full border border-border px-3 py-1.5 text-sm"
+                  >
+                    {p}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}  
           <section><h2 className="text-xl font-bold">Rəylər</h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-3">{reviews.map((r) => (
               <div key={r.name} className="rounded-2xl border border-border bg-card p-5">
@@ -88,7 +141,25 @@ function Details() {
               <div className="flex justify-between"><span className="text-muted-foreground">Mövcuddur</span><b>{h.available}</b></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Boş yer</span><b>{h.spots}</b></div>
             </div>
-            <Button asChild className="mt-5 h-12 w-full bg-brand"><Link to="/messages" search={{ home: h.id }}><MessageCircle />Ev sahibi ilə görüş</Link></Button>
+            {tenant ? (
+            <Button
+              className="mt-5 h-12 w-full bg-brand"
+              onClick={() => {
+                setAck(false);
+                setRules(true);
+              }}
+            >
+              <MessageCircle />
+              Ev sahibi ilə görüş
+            </Button>
+          ) : (
+            <Button asChild className="mt-5 h-12 w-full bg-brand">
+              <Link to="/messages" search={{ home: h.id }}>
+                <MessageCircle />
+                Ev sahibi ilə görüş
+              </Link>
+            </Button>
+          )}
             <button onClick={() => toggle(h.id)} aria-pressed={saved} className={`mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-xl border font-semibold transition ${saved ? "border-primary bg-primary-soft text-accent-foreground" : "border-border hover:border-primary"}`}>
               <Heart className={`size-4 ${saved ? "fill-primary stroke-primary" : ""}`} />{saved ? "İstək siyahısındadır" : "İstək siyahısına əlavə et"}
             </button>
@@ -104,3 +175,59 @@ function Details() {
     </div>
   );
 }
+
+{tenant && (
+  <Dialog open={rules} onOpenChange={setRules}>
+    <DialogContent className="max-w-lg rounded-3xl p-7">
+      <DialogHeader>
+        <DialogTitle className="text-xl">
+          Uyğunluq tələbləri
+        </DialogTitle>
+        <DialogDescription>
+          {tenant.name} bu mənzildə yaşayır.
+          Davam etməzdən əvvəl otaq yoldaşının
+          yaşayış qaydaları ilə tanış ol.
+        </DialogDescription>
+      </DialogHeader>
+
+      <ul className="space-y-2">
+        {tenant.prefs.map((p) => (
+          <li
+            key={p}
+            className="flex items-center gap-3 rounded-xl bg-muted px-4 py-3 text-sm"
+          >
+            <Check className="size-4 shrink-0 text-primary" />
+            {p}
+          </li>
+        ))}
+      </ul>
+
+      <label className="flex items-start gap-3 text-sm">
+        <input
+          type="checkbox"
+          checked={ack}
+          onChange={(e) => setAck(e.target.checked)}
+          className="mt-0.5 size-4 accent-primary"
+        />
+        Bu qaydalarla tanış oldum və onlara əməl etməyə razıyam.
+      </label>
+
+      <Button
+        asChild
+        disabled={!ack}
+        className="h-12 w-full bg-brand"
+      >
+        <Link
+          to="/messages"
+          search={{ home: h.id }}
+          onClick={(e) => {
+            if (!ack) e.preventDefault();
+            else setRules(false);
+          }}
+        >
+          Davam et
+        </Link>
+      </Button>
+    </DialogContent>
+  </Dialog>
+)}
