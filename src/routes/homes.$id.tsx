@@ -2,20 +2,22 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { BadgeCheck, Check, ChevronLeft, Heart, MapPin, MessageCircle, Star } from "lucide-react";
 import { useState } from "react";
 import { getHome, reviews, uniName, universities } from "@/lib/data";
-import { useAuthModal, useWishlist } from "@/lib/store";
-import { CompatRing } from "@/components/site/RoommateCard";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useWishlist } from "@/lib/store";
+import { Button } from "@/components/ui/button";
+
 
 export const Route = createFileRoute("/homes/$id")({
   loader: ({ params }) => { const h = getHome(params.id); if (!h) throw notFound(); return h; },
   head: ({ loaderData }) => ({
     meta: loaderData ? [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: `${loaderData.title} — EvDash` },
       { name: "description", content: `${loaderData.price} ₼/ay · ${loaderData.district}. ${loaderData.description.slice(0, 120)}` },
       { property: "og:title", content: `${loaderData.title} — EvDash` },
       { property: "og:description", content: `${loaderData.price} ₼/ay · ${loaderData.district}` },
-      { property: "og:image", content: loaderData.images[0]! },
-      { name: "twitter:image", content: loaderData.images[0]! },
+      { property: "og:image", content: loaderData.images[0] ?? "" },
+      { name: "twitter:image", content: loaderData.images[0] ?? "" },
     ] : [{ title: "Elan tapılmadı — EvDash" }, { name: "robots", content: "noindex" }],
   }),
   notFoundComponent: () => (
@@ -28,13 +30,9 @@ export const Route = createFileRoute("/homes/$id")({
 function Details() {
   const h = Route.useLoaderData();
   const { has, toggle } = useWishlist();
-  const auth = useAuthModal();
   const [img, setImg] = useState(0);
-  const [rules, setRules] = useState(false);
-  const [ack, setAck] = useState(false);
   const saved = has(h.id);
-  const tenant = h.tenants[0];
-  const consult = () => (tenant ? (setAck(false), setRules(true)) : auth.show("Ev sahibi ilə məsləhətləşmək üçün hesabına daxil ol."));
+
 
   return (
     <div className="container-page py-8">
@@ -73,19 +71,6 @@ function Details() {
                 <span className="font-medium">{universities.find((x) => x.id === u.id)?.name}</span><span className="rounded-full bg-primary-soft px-3 py-1 text-sm font-semibold text-accent-foreground">{u.minutes} dəq</span>
               </div>))}</div>
           </section>
-          {tenant && (
-            <section><h2 className="text-xl font-bold">Mövcud kirayəçi və uyğunluq</h2>
-              <div className="mt-4 rounded-3xl border border-border bg-card p-6">
-                <div className="flex items-center gap-4">
-                  <div className="grid size-14 place-items-center rounded-2xl bg-primary-soft font-display text-lg font-bold text-accent-foreground">{tenant.name[0]}</div>
-                  <div className="flex-1"><p className="font-semibold">{tenant.name}</p><p className="text-sm text-muted-foreground">{uniName(tenant.uni)} · {tenant.course}</p></div>
-                  {h.compat && <CompatRing value={h.compat} size={64} />}
-                </div>
-                <p className="mt-5 text-sm font-semibold">Yaşayış qaydaları</p>
-                <div className="mt-2 flex flex-wrap gap-2">{tenant.prefs.map((p) => <span key={p} className="rounded-full border border-border px-3 py-1.5 text-sm">{p}</span>)}</div>
-              </div>
-            </section>
-          )}
           <section><h2 className="text-xl font-bold">Rəylər</h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-3">{reviews.map((r) => (
               <div key={r.name} className="rounded-2xl border border-border bg-card p-5">
@@ -101,9 +86,9 @@ function Details() {
             <div className="mt-4 space-y-2 border-y border-border py-4 text-sm">
               <div className="flex justify-between"><span className="text-muted-foreground">Depozit</span><b>{h.deposit} ₼</b></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Mövcuddur</span><b>{h.available}</b></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Otaq yoldaşı yeri</span><b>{h.spots}</b></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Boş yer</span><b>{h.spots}</b></div>
             </div>
-            <button onClick={consult} className="mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand font-semibold text-primary-foreground shadow-brand transition hover:brightness-105"><MessageCircle className="size-4" />Ev sahibi ilə məsləhətləş</button>
+            <Button asChild className="mt-5 h-12 w-full bg-brand"><Link to="/messages" search={{ home: h.id }}><MessageCircle />Ev sahibi ilə görüş</Link></Button>
             <button onClick={() => toggle(h.id)} aria-pressed={saved} className={`mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-xl border font-semibold transition ${saved ? "border-primary bg-primary-soft text-accent-foreground" : "border-border hover:border-primary"}`}>
               <Heart className={`size-4 ${saved ? "fill-primary stroke-primary" : ""}`} />{saved ? "İstək siyahısındadır" : "İstək siyahısına əlavə et"}
             </button>
@@ -115,17 +100,7 @@ function Details() {
         </aside>
       </div>
 
-      {tenant && (
-        <Dialog open={rules} onOpenChange={setRules}>
-          <DialogContent className="max-w-lg rounded-3xl p-7">
-            <DialogHeader><DialogTitle className="text-xl">Uyğunluq tələbləri</DialogTitle>
-              <DialogDescription>{tenant.name} bu mənzildə yaşayır və aşağıdakı qaydaları təsdiqləyib. Davam etməzdən əvvəl tanış ol.</DialogDescription></DialogHeader>
-            <ul className="space-y-2">{tenant.prefs.map((p) => <li key={p} className="flex items-center gap-3 rounded-xl bg-muted px-4 py-3 text-sm"><Check className="size-4 text-primary" />{p}</li>)}</ul>
-            <label className="flex items-start gap-3 text-sm"><input type="checkbox" checked={ack} onChange={(e) => setAck(e.target.checked)} className="mt-0.5 size-4 accent-primary" />Bu qaydalarla tanış oldum və onlara əməl etməyə razıyam.</label>
-            <button disabled={!ack} onClick={() => { setRules(false); auth.show("Məsləhət sorğusu göndərmək üçün hesabına daxil ol."); }} className="h-12 w-full rounded-xl bg-brand font-semibold text-primary-foreground shadow-brand disabled:opacity-40 disabled:shadow-none">Davam et</button>
-          </DialogContent>
-        </Dialog>
-      )}
+
     </div>
   );
 }

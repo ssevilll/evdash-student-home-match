@@ -12,6 +12,8 @@ export const Route = createFileRoute("/homes/")({
   }),
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Tələbə evləri Bakıda — EvDash" },
       { name: "description", content: "Universitetə yaxınlıq, qiymət, rayon və otaq yoldaşı imkanına görə Bakıda tələbə mənzilləri." },
       { property: "og:title", content: "Tələbə evləri Bakıda — EvDash" },
@@ -74,7 +76,7 @@ function HomesPage() {
             <div>
               <div className="flex justify-between text-sm font-semibold"><span>Maksimum qiymət</span><span className="text-primary">{max} ₼</span></div>
               <input type="range" min={250} max={1000} step={50} value={max} onChange={(e) => navigate({ search: (p) => ({ ...p, max: Number(e.target.value) }) })} className="mt-3 w-full accent-primary" aria-label="Maksimum qiymət" />
-              <label className="mt-3 flex items-center gap-2 text-sm"><input type="checkbox" checked={shared} onChange={(e) => setShared(e.target.checked)} className="size-4 accent-primary" />Yalnız otaq yoldaşı yeri olanlar</label>
+              <label className="mt-3 flex items-center gap-2 text-sm"><input type="checkbox" checked={shared} onChange={(e) => setShared(e.target.checked)} className="size-4 accent-primary" />Yalnız boş yeri olanlar</label>
             </div>
             <div>
               <p className="text-sm font-semibold">Şərait</p>

@@ -1,62 +1,14 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Check, X } from "lucide-react";
-import { useAuthModal } from "@/lib/store";
-
-export const Route = createFileRoute("/subscriptions")({
-  head: () => ({
-    meta: [
-      { title: "EvDash Student — 10 AZN / ay" },
-      { name: "description", content: "Qabaqcıl otaq yoldaşı uyğunlaşdırması, fərdi tövsiyələr və premium tələbə alətləri ayda 10 AZN-ə." },
-      { property: "og:title", content: "EvDash Student — 10 AZN / ay" },
-      { property: "og:description", content: "Premium otaq yoldaşı uyğunlaşdırması və fərdi tövsiyələr." },
-    ],
-  }),
-  component: Subs,
-});
-
-const rows: [string, boolean, boolean][] = [
-  ["Ev axtarışı və filtrlər", true, true], ["İstək siyahısı", true, true], ["Ev sahibi ilə məsləhət", true, true],
-  ["Qabaqcıl otaq yoldaşı filtrləri", false, true], ["Uyğunluq səbəblərinin tam izahı", false, true],
-  ["Fərdi “Sənin üçün” tövsiyələri", false, true], ["Yeni elanlara 24 saat erkən giriş", false, true], ["Prioritet dəstək", false, true],
-];
-const faq = [
-  ["İstənilən vaxt ləğv edə bilərəm?", "Bəli, abunəliyi bir kliklə dayandıra bilərsən, növbəti ay ödəniş alınmır."],
-  ["Kimlər abunə ola bilər?", "Bakıda təhsil alan bütün bakalavr və magistr tələbələri."],
-  ["Ödəniş necə edilir?", "Yerli bank kartları ilə təhlükəsiz ödəniş tezliklə aktiv olacaq."],
-];
-
-function Subs() {
-  const auth = useAuthModal();
-  return (
-    <div className="container-page py-14">
-      <div className="text-center">
-        <p className="text-sm font-semibold text-primary">Abunəlik</p>
-        <h1 className="mt-2 text-4xl font-extrabold sm:text-5xl">Daha ağıllı axtarış, <span className="text-brand">daha uyğun</span> otaq yoldaşı</h1>
-        <p className="mx-auto mt-4 max-w-xl text-muted-foreground">Pulsuz plan ilə başla, hazır olanda EvDash Student-ə keç.</p>
-      </div>
-      <div className="mx-auto mt-12 grid max-w-4xl gap-6 md:grid-cols-2">
-        <div className="rounded-3xl border border-border bg-card p-8">
-          <h2 className="text-xl font-bold">Pulsuz</h2><p className="mt-1 text-sm text-muted-foreground">Əsas axtarış üçün</p>
-          <p className="mt-6 font-display text-5xl font-extrabold">0 ₼</p>
-          <button onClick={() => auth.show("signup")} className="mt-6 h-12 w-full rounded-xl border border-border font-semibold hover:border-primary">Pulsuz başla</button>
-          <ul className="mt-6 space-y-3 text-sm">{rows.map(([t, f]) => <li key={t} className={`flex items-center gap-3 ${f ? "" : "text-muted-foreground"}`}>{f ? <Check className="size-4 text-primary" /> : <X className="size-4" />}{t}</li>)}</ul>
-        </div>
-        <div className="relative rounded-3xl bg-brand p-[2px] shadow-brand">
-          <div className="h-full rounded-[calc(1.5rem-2px)] bg-card p-8">
-            <span className="absolute -top-3 right-8 rounded-full bg-secondary px-3 py-1 text-xs font-bold text-secondary-foreground">Ən populyar</span>
-            <h2 className="text-xl font-bold">EvDash Student</h2><p className="mt-1 text-sm text-muted-foreground">Ciddi axtaranlar üçün</p>
-            <p className="mt-6 font-display text-5xl font-extrabold"><span className="text-brand">10 ₼</span><span className="text-lg font-medium text-muted-foreground"> / ay</span></p>
-            <button onClick={() => auth.show("EvDash Student-ə abunə olmaq üçün hesabına daxil ol.")} className="mt-6 h-12 w-full rounded-xl bg-brand font-semibold text-primary-foreground shadow-brand transition hover:brightness-105">Abunə ol</button>
-            <ul className="mt-6 space-y-3 text-sm">{rows.map(([t]) => <li key={t} className="flex items-center gap-3"><span className="grid size-5 place-items-center rounded-full bg-brand"><Check className="size-3 text-primary-foreground" /></span>{t}</li>)}</ul>
-          </div>
-        </div>
-      </div>
-      <div className="mx-auto mt-20 max-w-2xl">
-        <h2 className="text-center text-2xl font-extrabold">Tez-tez verilən suallar</h2>
-        <div className="mt-6 space-y-3">{faq.map(([q, a]) => (
-          <details key={q} className="group rounded-2xl border border-border bg-card p-5"><summary className="cursor-pointer list-none font-semibold group-open:text-primary">{q}</summary><p className="mt-2 text-sm text-muted-foreground">{a}</p></details>
-        ))}</div>
-      </div>
-    </div>
-  );
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Check, ShieldCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useAccount } from "@/components/site/AccountProvider";
+import { useQuery } from "@tanstack/react-query";
+import { accountQuery } from "@/lib/account-query";
+import { subscriptionPrice, hasPremium } from "@/lib/account-rules";
+import { pageMeta } from "@/lib/meta";
+export const Route = createFileRoute("/subscriptions")({ head: () => pageMeta("EvDash Student — 8 AZN / ay", "Fərdi mənzil seçimləri ayda 8 AZN, etibarlı promo kodla 2 AZN."), component: Subscriptions });
+function Subscriptions() {
+  const { user } = useAccount(); const { data } = useQuery({ ...accountQuery, enabled: Boolean(user) });
+  const price = subscriptionPrice(data?.profile?.promo_code ?? ''); const premium = data?.subscriptions.some(s => hasPremium(s));
+  return <div className="container-page py-14"><div className="text-center"><p className="text-sm font-semibold text-primary">Abunəlik</p><h1 className="mt-3 text-4xl font-bold">EvDash Student</h1><p className="mt-4 text-muted-foreground">Ev axtarışını öz seçimlərinə uyğunlaşdır.</p></div><div className="mx-auto mt-12 grid max-w-4xl gap-6 md:grid-cols-2"><div className="rounded-2xl border border-border bg-card p-8"><h2 className="text-xl font-bold">Pulsuz</h2><p className="mt-6 text-5xl font-extrabold">0 ₼</p><p className="mt-2 text-sm text-muted-foreground">Hər zaman pulsuz</p><ul className="my-8 space-y-4">{['Ev axtarışı və filtrlər', 'İstək siyahısı', 'Ev sahibi ilə mesajlaşma', 'Şəxsi panel və ödəniş tarixçəsi'].map(t => <li key={t} className="flex items-center gap-3 text-sm"><Check className="size-4 text-primary" />{t}</li>)}</ul><Button asChild variant="outline" className="h-12 w-full"><Link to={user ? '/dashboard' : '/register'}>{user ? 'Şəxsi panel' : 'Pulsuz başla'}</Link></Button></div><div className="rounded-2xl border-2 border-primary bg-card p-8 shadow-brand"><div className="flex items-center gap-2"><ShieldCheck className="size-5 text-primary" /><h2 className="text-xl font-bold">EvDash Student</h2></div><p className="mt-6 text-5xl font-extrabold text-primary">{price} ₼<span className="text-lg font-normal text-muted-foreground"> / ay</span></p><p className="mt-2 text-sm text-muted-foreground">{price === 2 ? 'Promo qiyməti aktivdir · standart 8 AZN/ay' : 'Promo kodla 2 AZN/ay'}</p><ul className="my-8 space-y-4">{['Pulsuz planın bütün imkanları', 'Fərdi rayon və büdcə seçimləri', 'Şərait seçimlərinin saxlanması', 'Şəxsi axtarış seçimlərinin yenilənməsi'].map(t => <li key={t} className="flex items-center gap-3 text-sm"><Check className="size-4 text-primary" />{t}</li>)}</ul>{premium ? <Button asChild className="h-12 w-full"><Link to="/dashboard">Abunəliyimə bax</Link></Button> : user ? <Button disabled className="h-12 w-full">Ödəniş qəbulu hələ aktiv deyil</Button> : <Button asChild className="h-12 w-full"><Link to="/register">Hesab yarat</Link></Button>}</div></div><section className="mx-auto mt-16 max-w-2xl"><h2 className="text-2xl font-bold">Tez-tez verilən suallar</h2>{[['Promo kod necə işləyir?', 'Qeydiyyatda 8 simvollu, son iki simvolu rəqəm olan promo kod daxil etdikdə abunəlik qiyməti 2 AZN/ay olur.'], ['Fərdi seçimləri kim yaza bilər?', 'Yalnız aktiv premium abunəliyi olan istifadəçilər.'], ['Ödəniş edə bilərəm?', 'Hələlik yalnız şəxsi paneldə mövcud ödəniş qeydləri və hold məbləği göstərilir. Onlayn ödəniş qəbulu aktiv deyil.']].map(([q,a]) => <details key={q} className="border-b border-border py-5"><summary className="cursor-pointer font-semibold">{q}</summary><p className="mt-3 text-sm text-muted-foreground">{a}</p></details>)}</section></div>;
 }

@@ -7,6 +7,8 @@ import { PropertyCard } from "@/components/site/PropertyCard";
 export const Route = createFileRoute("/wishlist")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "İstək siyahısı — EvDash" },
       { name: "description", content: "Bəyəndiyin tələbə evlərini bir yerdə saxla və müqayisə et." },
       { property: "og:title", content: "İstək siyahısı — EvDash" },

@@ -21,7 +21,7 @@ export function CompatPill({ value }: { value: number }) {
 }
 
 export function PropertyCard({ home }: { home: Home }) {
-  const near = home.unis[0]!;
+  const near = home.unis[0];
   return (
     <Link to="/homes/$id" params={{ id: home.id }} className="group block overflow-hidden rounded-3xl border border-border bg-card shadow-card transition duration-300 hover:-translate-y-1 hover:shadow-lift">
       <div className="relative aspect-[4/3] overflow-hidden">
@@ -29,7 +29,6 @@ export function PropertyCard({ home }: { home: Home }) {
         <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
           {home.spots > 0 ? <span className="rounded-full bg-background/95 px-2.5 py-1 text-xs font-semibold">{home.spots} boş yer</span>
             : <span className="rounded-full bg-secondary px-2.5 py-1 text-xs font-semibold text-secondary-foreground">Fərdi</span>}
-          {home.compat && <CompatPill value={home.compat} />}
         </div>
         <HeartButton id={home.id} className="absolute right-3 top-3" />
       </div>
@@ -40,7 +39,7 @@ export function PropertyCard({ home }: { home: Home }) {
         </div>
         <p className="mt-1 flex items-center gap-1 text-sm text-muted-foreground"><MapPin className="size-3.5" />{home.district}, {home.address}</p>
         <div className="mt-3 flex flex-wrap gap-2 text-xs">
-          <span className="rounded-full bg-primary-soft px-2.5 py-1 font-semibold text-accent-foreground">{uniName(near.id)} · {near.minutes} dəq</span>
+          <span className="rounded-full bg-primary-soft px-2.5 py-1 font-semibold text-accent-foreground">{near ? `${uniName(near.id)} · ${near.minutes} dəq` : "Universitetə yaxın"}</span>
           <span className="flex items-center gap-1 rounded-full bg-muted px-2.5 py-1"><BedDouble className="size-3.5" />{home.rooms} otaq</span>
           <span className="flex items-center gap-1 rounded-full bg-muted px-2.5 py-1"><Users className="size-3.5" />{home.available}</span>
         </div>

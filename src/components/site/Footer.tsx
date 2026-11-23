@@ -7,13 +7,12 @@ export function Footer() {
       <div className="container-page grid gap-10 py-16 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <div className="inline-flex rounded-2xl bg-background px-3 py-2"><Logo /></div>
-          <p className="mt-5 max-w-xs text-sm leading-relaxed opacity-70">Bakıda tələbələr üçün etibarlı ev və uyğun otaq yoldaşı tapmağın ən rahat yolu.</p>
+          <p className="mt-5 max-w-xs text-sm leading-relaxed opacity-70">Bakıda tələbələr üçün universitetə yaxın, etibarlı ev tapmağın rahat yolu.</p>
         </div>
         <div>
           <h4 className="text-sm font-semibold">Platforma</h4>
           <ul className="mt-4 space-y-2.5 text-sm opacity-70">
             <li><Link to="/homes" className="hover:text-primary-light">Evlər</Link></li>
-            <li><Link to="/roommates" className="hover:text-primary-light">Otaq yoldaşı</Link></li>
             <li><Link to="/wishlist" className="hover:text-primary-light">İstək siyahısı</Link></li>
             <li><Link to="/subscriptions" className="hover:text-primary-light">EvDash Student</Link></li>
           </ul>
@@ -29,7 +28,7 @@ export function Footer() {
         <div>
           <h4 className="text-sm font-semibold">Əlaqə</h4>
           <ul className="mt-4 space-y-2.5 text-sm opacity-70">
-            <li>salam@evdash.az</li><li>+994 12 555 00 00</li><li>Bakı, Azərbaycan</li>
+            <li>contact@evdash.az</li><li>+994 12 555 00 00</li><li>Bakı, Azərbaycan</li>
           </ul>
         </div>
       </div>
