@@ -5,14 +5,11 @@ export function Logo({ className = "" }: { className?: string }) {
   return (
     <Link
       to="/"
-      aria-label="EvDash ana səhifə"
-      className={`inline-flex shrink-0 items-center ${className}`}
+      className={`inline-flex items-center ${className}`}
     >
-      <img
-        src="/favicon.png"
-        alt="EvDash Logo"
-        className="h-12 w-44 object-contain"
-      />
+      <span className="text-2xl font-bold text-orange-600">
+        EVDASH TEST
+      </span>
     </Link>
   );
 }
